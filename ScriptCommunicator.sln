@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptCommunicator", "ModMenuMerger\ScriptCommunicator.csproj", "{753BAE41-2693-4B87-8AFC-5D7DE84797E8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptCommunicator", "ScriptCommunicatorMenu\ScriptCommunicator.csproj", "{753BAE41-2693-4B87-8AFC-5D7DE84797E8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UsageExample", "Example\UsageExample.csproj", "{07460253-E9FC-4881-914F-21187ADC03F9}"
 EndProject
