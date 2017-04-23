@@ -15,8 +15,10 @@ namespace CommunicatorScriptExample
     public class UsageExample : Script // declare Modname as a script
     {
         ScriptCommunicator ExampleCommunicator = new ScriptCommunicator("CommunicatorScriptExample");
-        //the EventName MUST be the same as the filename (without the extension) in order to communicate with my menu. 
-        //So since this script's filename is CommunicatorScriptExample.cs, the event name should be CommunicatorScriptExample.
+        //the EventName MUST be the same as the .scmod filename (without the extension) in order to communicate with the menu. 
+        //So for example, create a text file and rename it to CommunicatorScriptExample.scmod, then place it in the "scripts" folder.
+        //Open the .scmod file with a text editor. Type into the first line the Title of the mod. Then in the second line, you can type a Description.
+        //All other lines will be ignored.
 
         public UsageExample() // main function
         {
