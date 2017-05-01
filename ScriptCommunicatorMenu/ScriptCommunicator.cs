@@ -37,6 +37,7 @@ namespace ScriptCommunicator
         void CollectCompatibleMods()
         {
             ModNameReaderClass mnrClass = new ModNameReaderClass();
+            mnrClass.LoadCompatibleMods(Path.GetFullPath(Path.Combine(SettingsDirectory, @"..\")), "*.scmod");
             mnrClass.LoadCompatibleMods(SettingsDirectory, "*.scmod");
 
             foreach (string pathname in mnrClass.GetFullPathNames())
@@ -65,6 +66,10 @@ namespace ScriptCommunicator
             LeMainMenu.HighlightedItemTextColor = Color.Black;
             LeMainMenu.HighlightedBoxColor = Color.FromArgb(140, 13, 219, 175);
             LeMainMenu.DescriptionBoxColor = Color.FromArgb(230, 13, 219, 175);
+            LeMainMenu.TitleFont = 1.1f;
+            LeMainMenu.xPosBG = 0.13f;
+            LeMainMenu.MenuBGWidth = 0.24f;
+            LeMainMenu.CalculateMenuPositioning();
 
             _menuPool.AddMenu(LeMainMenu);
 
@@ -84,9 +89,9 @@ namespace ScriptCommunicator
         {
             ScriptSettings config = ScriptSettings.Load(filepath);
 
-            KeyToggle1 = config.GetValue<Keys>("Keyboard Controls", "Menu Toggle Key 1", Keys.ControlKey);
-            KeyToggle2 = config.GetValue<Keys>("Keyboard Controls", "Menu Toggle Key 2", Keys.I);
-            buttonToggle1 = config.GetValue<Control>("Gamepad Controls", "Menu Toggle Button 1", Control.Cover);
+            KeyToggle1 = config.GetValue<Keys>("Keyboard Controls", "Menu Toggle Key 1", Keys.F10);
+            KeyToggle2 = config.GetValue<Keys>("Keyboard Controls", "Menu Toggle Key 2", Keys.F10);
+            buttonToggle1 = config.GetValue<Control>("Gamepad Controls", "Menu Toggle Button 1", Control.VehicleHandbrake);
             buttonToggle2 = config.GetValue<Control>("Gamepad Controls", "Menu Toggle Button 2", Control.VehicleHandbrake);
             buttonToggle3 = config.GetValue<Control>("Gamepad Controls", "Menu Toggle Button 3", Control.VehicleHorn);
         }
@@ -97,9 +102,9 @@ namespace ScriptCommunicator
             {
                 ScriptSettings config = ScriptSettings.Load(filepath);
 
-                config.SetValue<Keys>("Keyboard Controls", "Menu Toggle Key 1", Keys.ControlKey);
-                config.SetValue<Keys>("Keyboard Controls", "Menu Toggle Key 2", Keys.I);
-                config.SetValue<Control>("Gamepad Controls", "Menu Toggle Button 1", Control.Cover);
+                config.SetValue<Keys>("Keyboard Controls", "Menu Toggle Key 1", Keys.F10);
+                config.SetValue<Keys>("Keyboard Controls", "Menu Toggle Key 2", Keys.F10);
+                config.SetValue<Control>("Gamepad Controls", "Menu Toggle Button 1", Control.VehicleHandbrake);
                 config.SetValue<Control>("Gamepad Controls", "Menu Toggle Button 2", Control.VehicleHandbrake);
                 config.SetValue<Control>("Gamepad Controls", "Menu Toggle Button 3", Control.VehicleHorn);
                 config.Save();
@@ -263,7 +268,7 @@ namespace ScriptCommunicator
         {
             string[] files = Directory.GetFiles(directory, searchpattern);
 
-            AllSettingsWithFullPath.Clear();
+            //AllSettingsWithFullPath.Clear();
 
             AllSettingsWithFullPath.AddRange(files);
         }

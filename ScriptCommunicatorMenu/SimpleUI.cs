@@ -165,7 +165,7 @@ namespace SimpleUI
         public Dictionary<UIMenuItem, UIMenu> Binded { get; }
 
         int InputTimer;
-        static int InputWait = 100;
+        static int InputWait = 60;
 
         /*Title Formatting*/
         public Color TitleColor = Color.FromArgb(255, 255, 255, 255);
@@ -173,7 +173,7 @@ namespace SimpleUI
         public Color TitleBackgroundColor = Color.FromArgb(144, 0, 0, 0);
 
         /*Title*/
-        protected float TitleFont;
+        public float TitleFont;
         protected float yPosTitleBG;
         protected float yPosTitleText;
         protected float TitleBGHeight;
@@ -187,12 +187,14 @@ namespace SimpleUI
         public Color HighlightedBoxColor = Color.FromArgb(255, 0, 0, 0);
 
         /*Rectangle box for UIMenuItem objects*/
-        protected float xPosBG;
+        public float xPosBG;
         protected float yPosItemBG;
-        protected float MenuBGWidth;
+        public float MenuBGWidth;
         protected float heightItemBG;
         protected float posMultiplier;
 
+        protected float ItemTextFontSize;
+        protected int ItemTextFontType;
         protected float xPosItemText;
         protected float xPosRightEndOfMenu;
         protected float xPosItemValue;
@@ -224,21 +226,28 @@ namespace SimpleUI
         {
             Title = title;
 
-            TitleFont = 1.1f;
+            TitleFont = 0.9f; //TitleFont = 1.1f; for no-value fit.
             yPosTitleBG = 0.050f;
-            yPosTitleText = yPosTitleBG - (TitleFont / 35f);
             TitleBGHeight = 0.07f; //0.046f
-            xPosBG = 0.13f;
-            MenuBGWidth = 0.24f;
-            heightItemBG = 0.025f;
+            ItemTextFontSize = 0.452f;
+            ItemTextFontType = 4;
+            xPosBG = 0.22f; //xPosBG = 0.13f; for no-value fit.
+            MenuBGWidth = 0.40f; //MenuBGWidth = 0.24f; for no-value fit.
+            heightItemBG = 0.035f;
             UnderlineHeight = 0.002f;
+            posMultiplier = 0.035f;
+            yTextOffset = 0.015f;
+            ScrollBarWidth = 0.0055f;
+            CalculateMenuPositioning();
+        }
+
+        public void CalculateMenuPositioning()
+        {
+            yPosTitleText = yPosTitleBG - (TitleFont / 35f);
             yPosUnderline = yPosTitleBG + (TitleBGHeight / 2) + (UnderlineHeight / 2);
             yPosItemBG = yPosUnderline + (UnderlineHeight / 2) + (heightItemBG / 2); //0.0655f;
-            posMultiplier = 0.025f;
-            yTextOffset = 0.011f;
-            xPosItemText = xPosBG - MenuBGWidth / 2;
+            xPosItemText = (xPosBG - MenuBGWidth / 2) + 0.0055f;
             xPosRightEndOfMenu = xPosBG + MenuBGWidth / 2; //will Right Justify
-            ScrollBarWidth = 0.0055f;
             xPosScrollBar = xPosRightEndOfMenu - (ScrollBarWidth / 2);
             xPosItemValue = xPosScrollBar - (ScrollBarWidth / 2);
         }
@@ -289,7 +298,7 @@ namespace SimpleUI
                             bind.BindedSubmenu.IsVisible = true;
                             bind.BindedSubmenu.InputTimer = Game.GameTime + 350;
                         }
-                        
+
                         InputTimer = Game.GameTime + 350;
                         //return;
                     }
@@ -316,7 +325,7 @@ namespace SimpleUI
         {
             DrawCustomText(Title, TitleFont, 1, TitleColor.R, TitleColor.G, TitleColor.B, TitleColor.A, xPosBG, yPosTitleText, TextJustification.Center); //Draw title text
             DrawRectangle(xPosBG, yPosTitleBG, MenuBGWidth, TitleBGHeight, TitleBackgroundColor.R, TitleBackgroundColor.G, TitleBackgroundColor.B, TitleBackgroundColor.A); //Draw main rectangle
-            DrawRectangle(xPosBG, /*yTitleText + 0.044f*/yPosUnderline, MenuBGWidth, UnderlineHeight, TitleUnderlineColor.R, TitleUnderlineColor.G, TitleUnderlineColor.B, TitleUnderlineColor.A); //Draw rectangle as underline of title
+            DrawRectangle(xPosBG, yPosUnderline, MenuBGWidth, UnderlineHeight, TitleUnderlineColor.R, TitleUnderlineColor.G, TitleUnderlineColor.B, TitleUnderlineColor.A); //Draw rectangle as underline of title
 
             foreach (UIMenuItem item in _itemList)
             {
@@ -328,41 +337,18 @@ namespace SimpleUI
 
                     if (_itemList.IndexOf(item) == SelectedIndex)
                     {
-                        /*DrawCustomText(item.Text, 0.29f, 10, ItemHighlightColor.R, ItemHighlightColor.G, ItemHighlightColor.B, ItemHighlightColor.A, 0.09f, 0.05f + _itemList.IndexOf(item) * 0.02f); //Draw highlighted item text
+                        DrawCustomText(item.Text, ItemTextFontSize, ItemTextFontType, HighlightedItemTextColor.R, HighlightedItemTextColor.G, HighlightedItemTextColor.B, HighlightedItemTextColor.A, xPosItemText, yPosItemBG - yTextOffset + YPosBasedOnScroll * posMultiplier); //Draw highlighted item text
 
                         if (item.Value != null)
-                        { DrawCustomText(Convert.ToString(item.Value), 0.29f, 10, ItemHighlightColor.R, ItemHighlightColor.G, ItemHighlightColor.B, ItemHighlightColor.A, 0.27f, 0.05f + _itemList.IndexOf(item) * 0.02f); } //Draw highlighted item value
-
-                        DrawRectangle(xPosBG, 0.0618f + _itemList.IndexOf(item) * 0.02f, MenuBGWidth, 0.017f, HighlightedBoxColor.R, HighlightedBoxColor.G, HighlightedBoxColor.B, HighlightedBoxColor.A); //Draw rectangle over highlighted text
-
-                        if (item.Description != null)
-                        {
-                            DrawCustomText(item.Description, 0.29f, 10, DescriptionTextColor.R, DescriptionTextColor.G, DescriptionTextColor.B, DescriptionTextColor.A, 0.09f, 0.05075f + _itemList.Count * 0.02f); // Draw description text at bottom of menu
-                            DrawRectangle(xPosBG, yPosItemBG + _itemList.Count * 0.02f, MenuBGWidth, heightItemBG, DescBoxColor.R, DescBoxColor.G, DescBoxColor.B, DescBoxColor.A); //Draw rectangle over description text at bottom of the list.
-                        }
-
-                        SelectedItem = item;*/
-
-                        DrawCustomText(item.Text, 0.29f, 10, HighlightedItemTextColor.R, HighlightedItemTextColor.G, HighlightedItemTextColor.B, HighlightedItemTextColor.A, xPosItemText, yPosItemBG - yTextOffset + YPosBasedOnScroll * posMultiplier); //Draw highlighted item text
-
-                        if (item.Value != null)
-                        { DrawCustomText(Convert.ToString(item.Value), 0.29f, 10, HighlightedItemTextColor.R, HighlightedItemTextColor.G, HighlightedItemTextColor.B, HighlightedItemTextColor.A, xPosItemValue, yPosItemBG - yTextOffset + YPosBasedOnScroll * posMultiplier, TextJustification.Right); } //Draw highlighted item value
+                        { DrawCustomText(Convert.ToString(item.Value), ItemTextFontSize, ItemTextFontType, HighlightedItemTextColor.R, HighlightedItemTextColor.G, HighlightedItemTextColor.B, HighlightedItemTextColor.A, xPosItemValue, yPosItemBG - yTextOffset + YPosBasedOnScroll * posMultiplier, TextJustification.Right); } //Draw highlighted item value
 
                         DrawRectangle(xPosBG, yPosItemBG + YPosBasedOnScroll * posMultiplier, MenuBGWidth, heightItemBG, HighlightedBoxColor.R, HighlightedBoxColor.G, HighlightedBoxColor.B, HighlightedBoxColor.A); //Draw rectangle over highlighted text
 
                         if (item.Description != null)
                         {
-                            /*DrawCustomText(item.Description, 0.29f, 10, DescriptionTextColor.R, DescriptionTextColor.G, DescriptionTextColor.B, DescriptionTextColor.A, xPosItemText, yPosItemBG - yTextOffset + YPosDescBasedOnScroll * posMultiplier, TextJustification.Left, true); // Draw description text at bottom of menu
-                            DrawRectangle(xPosBG, yPosItemBG + YPosDescBasedOnScroll * posMultiplier, MenuBGWidth, heightItemBG, DescriptionBoxColor.R, DescriptionBoxColor.G, DescriptionBoxColor.B, DescriptionBoxColor.A); //Draw rectangle over description text at bottom of the list.
-
-                            if (item.Description.Length > 50)
-                            {
-                                DrawRectangle(xPosBG, yPosItemBG + (YPosDescBasedOnScroll + 1) * posMultiplier, MenuBGWidth, heightItemBG, DescriptionBoxColor.R, DescriptionBoxColor.G, DescriptionBoxColor.B, DescriptionBoxColor.A); //Draw second rectangle over description text at bottom of the list.
-                            }*/
-
                             foreach (string desc in item.DescriptionTexts)
                             {
-                                DrawCustomText(desc, 0.29f, 10, DescriptionTextColor.R, DescriptionTextColor.G, DescriptionTextColor.B, DescriptionTextColor.A, xPosItemText, yPosItemBG - yTextOffset + (item.DescriptionTexts.IndexOf(desc) + YPosDescBasedOnScroll) * posMultiplier, TextJustification.Left, false); // Draw description text at bottom of menu
+                                DrawCustomText(desc, ItemTextFontSize, ItemTextFontType, DescriptionTextColor.R, DescriptionTextColor.G, DescriptionTextColor.B, DescriptionTextColor.A, xPosItemText, yPosItemBG - yTextOffset + (item.DescriptionTexts.IndexOf(desc) + YPosDescBasedOnScroll) * posMultiplier, TextJustification.Left, false); // Draw description text at bottom of menu
                                 DrawRectangle(xPosBG, yPosItemBG + (item.DescriptionTexts.IndexOf(desc) + YPosDescBasedOnScroll) * posMultiplier, MenuBGWidth, heightItemBG, DescriptionBoxColor.R, DescriptionBoxColor.G, DescriptionBoxColor.B, DescriptionBoxColor.A); //Draw rectangle over description text at bottom of the list.
                             }
                         }
@@ -371,63 +357,57 @@ namespace SimpleUI
                     }
                     else
                     {
-                        /*DrawCustomText(item.Text, 0.29f, 10, ItemDefaultColor.R, ItemDefaultColor.G, ItemDefaultColor.B, ItemDefaultColor.A, 0.09f, 0.05f + _itemList.IndexOf(item) * 0.02f); //Draw item text
+                        DrawCustomText(item.Text, ItemTextFontSize, ItemTextFontType, DefaultTextColor.R, DefaultTextColor.G, DefaultTextColor.B, DefaultTextColor.A, xPosItemText, yPosItemBG - yTextOffset + YPosBasedOnScroll * posMultiplier); //Draw item text
 
                         if (item.Value != null)
-                        { DrawCustomText(Convert.ToString(item.Value), 0.29f, 10, ItemDefaultColor.R, ItemDefaultColor.G, ItemDefaultColor.B, ItemDefaultColor.A, 0.27f, 0.05f + _itemList.IndexOf(item) * 0.02f); } //Draw item value
-                        */
+                        { DrawCustomText(Convert.ToString(item.Value), ItemTextFontSize, ItemTextFontType, DefaultTextColor.R, DefaultTextColor.G, DefaultTextColor.B, DefaultTextColor.A, xPosItemValue, yPosItemBG - yTextOffset + YPosBasedOnScroll * posMultiplier, TextJustification.Right); } //Draw item value
 
-                        DrawCustomText(item.Text, 0.29f, 10, DefaultTextColor.R, DefaultTextColor.G, DefaultTextColor.B, DefaultTextColor.A, xPosItemText, yPosItemBG - yTextOffset + YPosBasedOnScroll * posMultiplier); //Draw item text
-
-                        if (item.Value != null)
-                        { DrawCustomText(Convert.ToString(item.Value), 0.29f, 10, DefaultTextColor.R, DefaultTextColor.G, DefaultTextColor.B, DefaultTextColor.A, xPosItemValue, yPosItemBG - yTextOffset + YPosBasedOnScroll * posMultiplier, TextJustification.Right); } //Draw item value
-
-                        //DrawRectangle(xPosBG, yPosItemBG + _itemList.IndexOf(item) * 0.02f, MenuBGWidth, heightItemBG, 0, 0, 0, 144); //Draw background rectangles around all items.
                         DrawRectangle(xPosBG, yPosItemBG + YPosBasedOnScroll * posMultiplier, MenuBGWidth, heightItemBG, DefaultBoxColor.R, DefaultBoxColor.G, DefaultBoxColor.B, DefaultBoxColor.A); //Draw background rectangles around all items.
                     }
                 }
             }
 
-            /*if (Game.IsKeyPressed(Keys.NumPad6))
+            //DevMenuPositioner();
+        }
+
+        void DevMenuPositioner()
+        {
+            if (Game.IsKeyPressed(Keys.NumPad6))
             {
-                xPosBG += (float)Math.Round(0.001, 3);
+                ItemTextFontSize = (float)Math.Round(ItemTextFontSize + 0.001, 3);
             }
             if (Game.IsKeyPressed(Keys.NumPad4))
             {
-                xPosBG -= (float)Math.Round(0.001, 3);
+                ItemTextFontSize = (float)Math.Round(ItemTextFontSize - 0.001, 3);
             }
             if (Game.IsKeyPressed(Keys.NumPad8))
             {
-                yPosTitleBG += (float)Math.Round(0.001, 3);
-
+                heightItemBG = (float)Math.Round(heightItemBG + 0.001, 3);
             }
             if (Game.IsKeyPressed(Keys.NumPad2))
             {
-                yPosTitleBG -= (float)Math.Round(0.001, 3);
+                heightItemBG = (float)Math.Round(heightItemBG - 0.001, 3);
             }
             if (Game.IsKeyPressed(Keys.NumPad9))
             {
-                MenuBGWidth += (float)Math.Round(0.001, 3);
+                posMultiplier = (float)Math.Round(posMultiplier + 0.001, 3);
             }
             if (Game.IsKeyPressed(Keys.NumPad7))
             {
-                MenuBGWidth -= (float)Math.Round(0.001, 3);
+                posMultiplier = (float)Math.Round(posMultiplier - 0.001, 3);
             }
             if (Game.IsKeyPressed(Keys.NumPad3))
             {
-                TitleBGHeight += (float)Math.Round(0.001, 3);
+                yTextOffset = (float)Math.Round(yTextOffset + 0.001, 3);
             }
             if (Game.IsKeyPressed(Keys.NumPad1))
             {
-                TitleBGHeight -= (float)Math.Round(0.001, 3);
+                yTextOffset = (float)Math.Round(yTextOffset - 0.001, 3);
             }
-            UI.ShowSubtitle("xPosBG: " + xPosBG + ", yPosTitleBG: " + yPosTitleBG + ", MenuBGWidth: " + MenuBGWidth + ", TitleBGHeight: " + TitleBGHeight);*/
-
-
-
-
+            CalculateMenuPositioning();
+            UI.ShowSubtitle("ItemTextFontSize: " + ItemTextFontSize + ", heightItemBG: " + heightItemBG + ", posMultiplier: " + posMultiplier + ", yTextOffset: " + yTextOffset);
         }
-        
+
         protected void DrawScrollBar()
         {
             if (UseScroll && _itemList.Count > MaxItemsOnScreen)
@@ -537,7 +517,6 @@ namespace SimpleUI
                     maxItem = _itemList.Count - 1;
                 }
 
-
                 if (IsHoldingSpeedupControl())
                 {
                     InputTimer = Game.GameTime + 20;
@@ -594,6 +573,7 @@ namespace SimpleUI
                 Control.FrontendRight,
                 Control.FrontendCancel,
                 Control.FrontendSelect,
+                Control.CharacterWheel,
                 Control.CursorScrollDown,
                 Control.CursorScrollUp,
                 Control.CursorX,
@@ -711,12 +691,19 @@ namespace SimpleUI
 
         bool IsHoldingSpeedupControl()
         {
-            return Game.IsControlPressed(2, Control.Sprint);
+            if (Game.CurrentInputMode == InputMode.GamePad)
+            {
+                return Game.IsControlPressed(2, Control.VehicleHandbrake);
+            }
+            else
+            {
+                return Game.IsControlPressed(2, Control.Sprint);
+            }
         }
 
         public void SetInputWait(int ms = 350)
         {
-            InputTimer = Game.GameTime + 350;
+            InputTimer = Game.GameTime + ms;
         }
 
         public bool ControlBoolValue(UIMenuItem item, bool boolToControl)
@@ -735,20 +722,6 @@ namespace SimpleUI
             }
             return boolToControl;
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         public float ControlFloatValue(UIMenuItem item, float numberToControl, float incrementValue, float incrementValueFast, int decimals = 2)
         {
@@ -854,7 +827,7 @@ namespace SimpleUI
             base.yPosUnderline = yPosTitleBG + (TitleBGHeight / 2) + (UnderlineHeight / 2);
             base.yPosItemBG = yPosUnderline + (UnderlineHeight / 2) + (heightItemBG / 2); //0.0655f;
             base.posMultiplier = 0.025f;
-            base.yTextOffset = 0.011f;
+            base.yTextOffset = 0.015f;
             base.xPosItemText = xPosBG - MenuBGWidth / 2;
             base.xPosRightEndOfMenu = xPosBG + MenuBGWidth / 2; //will Right Justify
             base.ScrollBarWidth = 0.0055f;
@@ -921,9 +894,8 @@ namespace SimpleUI
         {
             get { return _description; }
             set { DescriptionTexts = value.SplitOn(90); _description = value; }
-
         }
-        
+
         public virtual void ChangeListIndex() { }
     }
 
