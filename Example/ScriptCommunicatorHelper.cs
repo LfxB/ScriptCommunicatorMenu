@@ -50,19 +50,19 @@ namespace ScriptCommunicatorHelper
 
         public void UnblockScriptCommunicatorModMenu()
         {
-            if (IsScriptCommunicatorMenuBlocked() && ScriptCommunicatorModMenuIsBlocked)
+            if (ScriptCommunicatorMenuIsBlocked() && ScriptCommunicatorModMenuIsBlocked)
             {
                 ScriptCommunicatorModMenuHandle.Set();
                 ScriptCommunicatorModMenuIsBlocked = false;
             }
         }
 
-        public bool IsScriptCommunicatorMenuBlocked()
+        public bool ScriptCommunicatorMenuIsBlocked()
         {
             return !ScriptCommunicatorModMenuHandle.WaitOne(0);
         }
 
-        public bool DoesScriptCommunicatorMenuExist()
+        public bool ScriptCommunicatorMenuDllExists()
         {
             return File.Exists(@"scripts\ScriptCommunicator.dll");
         }
