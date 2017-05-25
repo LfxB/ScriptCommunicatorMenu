@@ -13,6 +13,7 @@ namespace ScriptCommunicator
 {
     public class ScriptCommunicator : Script // declare Modname as a script
     {
+        bool initialize = true;
         static string SettingsDirectory = @"scripts\";
         int InputTimer;
 
@@ -21,11 +22,6 @@ namespace ScriptCommunicator
 
         public ScriptCommunicator() // main function
         {
-            SaveMergerINI(@"scripts\ScriptCommunicator.ini");
-            LoadMergerINI(@"scripts\ScriptCommunicator.ini");
-            CollectCompatibleMods();
-            InitMenu();
-
             Tick += OnTick;
             KeyDown += OnKeyDown;
             KeyUp += OnKeyUp;
@@ -152,6 +148,18 @@ namespace ScriptCommunicator
 
         void OnTick(object sender, EventArgs e) // This is where most of your script goes
         {
+            if (initialize) //Add a wait in case there are new scmod files created by other scripts.
+            {
+                Wait(1000);
+
+                SaveMergerINI(@"scripts\ScriptCommunicator.ini");
+                LoadMergerINI(@"scripts\ScriptCommunicator.ini");
+                CollectCompatibleMods();
+                InitMenu();
+
+                initialize = false;
+            }
+
             _menuPool.ProcessMenus();
 
             while (!OpenMenuEventAllowed())

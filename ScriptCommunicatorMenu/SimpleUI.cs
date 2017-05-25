@@ -160,12 +160,12 @@ namespace SimpleUI
         public bool IsVisible;
         public string Title { get; set; }
         public UIMenuItem SelectedItem;
-        List<UIMenuItem> _itemList = new List<UIMenuItem>();
+        protected List<UIMenuItem> _itemList = new List<UIMenuItem>();
         List<BindedItem> _bindedList = new List<BindedItem>();
         public Dictionary<UIMenuItem, UIMenu> Binded { get; }
 
-        int InputTimer;
-        static int InputWait = 60;
+        DateTime InputTimer;
+        static int InputWait = 80;
 
         /*Title Formatting*/
         public Color TitleColor = Color.FromArgb(255, 255, 255, 255);
@@ -174,7 +174,7 @@ namespace SimpleUI
 
         /*Title*/
         public float TitleFont;
-        protected float yPosTitleBG;
+        public float yPosTitleBG;
         protected float yPosTitleText;
         protected float TitleBGHeight;
         protected float UnderlineHeight;
@@ -211,9 +211,9 @@ namespace SimpleUI
         bool UseScroll = true;
         int YPosBasedOnScroll;
         int YPosDescBasedOnScroll;
-        int MaxItemsOnScreen = 15;
-        int minItem = 0;
-        int maxItem = 14; //must always be 1 less than MaxItemsOnScreen
+        protected int MaxItemsOnScreen = 15;
+        protected int minItem = 0;
+        protected int maxItem = 14; //must always be 1 less than MaxItemsOnScreen
 
         private string AUDIO_LIBRARY = "HUD_FRONTEND_DEFAULT_SOUNDSET";
 
@@ -241,7 +241,7 @@ namespace SimpleUI
             CalculateMenuPositioning();
         }
 
-        public void CalculateMenuPositioning()
+        public virtual void CalculateMenuPositioning()
         {
             yPosTitleText = yPosTitleBG - (TitleFont / 35f);
             yPosUnderline = yPosTitleBG + (TitleBGHeight / 2) + (UnderlineHeight / 2);
@@ -274,6 +274,12 @@ namespace SimpleUI
             _bindedList.Add(new BindedItem { BindedSubmenu = submenu, BindedItemToSubmenu = itemToBindTo });
         }
 
+        public List<UIMenuItem> UIMenuItemList
+        {
+            get { return _itemList; }
+            set { _itemList = value; }
+        }
+
         public virtual void Draw()
         {
             if (IsVisible)
@@ -296,10 +302,10 @@ namespace SimpleUI
                         foreach (var bind in _bindedList.Where(bind => bind.BindedItemToSubmenu == SelectedItem))
                         {
                             bind.BindedSubmenu.IsVisible = true;
-                            bind.BindedSubmenu.InputTimer = Game.GameTime + 350;
+                            bind.BindedSubmenu.InputTimer = DateTime.Now.AddMilliseconds(350);
                         }
 
-                        InputTimer = Game.GameTime + 350;
+                        InputTimer = DateTime.Now.AddMilliseconds(350);
                         //return;
                     }
                 }
@@ -311,10 +317,10 @@ namespace SimpleUI
                     if (ParentMenu != null)
                     {
                         ParentMenu.IsVisible = true;
-                        ParentMenu.InputTimer = Game.GameTime + 350;
+                        ParentMenu.InputTimer = DateTime.Now.AddMilliseconds(350);
                     }
 
-                    InputTimer = Game.GameTime + 350;
+                    InputTimer = DateTime.Now.AddMilliseconds(350);
                     //return;
                 }
             }
@@ -519,11 +525,11 @@ namespace SimpleUI
 
                 if (IsHoldingSpeedupControl())
                 {
-                    InputTimer = Game.GameTime + 20;
+                    InputTimer = DateTime.Now.AddMilliseconds(20);
                 }
                 else
                 {
-                    InputTimer = Game.GameTime + InputWait;
+                    InputTimer = DateTime.Now.AddMilliseconds(InputWait);
                 }
             }
 
@@ -553,11 +559,11 @@ namespace SimpleUI
 
                 if (IsHoldingSpeedupControl())
                 {
-                    InputTimer = Game.GameTime + 20;
+                    InputTimer = DateTime.Now.AddMilliseconds(20);
                 }
                 else
                 {
-                    InputTimer = Game.GameTime + InputWait;
+                    InputTimer = DateTime.Now.AddMilliseconds(InputWait);
                 }
             }
         }
@@ -613,7 +619,7 @@ namespace SimpleUI
         {
             if (Game.IsControlPressed(2, Control.PhoneUp) || Game.IsKeyPressed(Keys.NumPad8) || Game.IsKeyPressed(Keys.Up))
             {
-                if (InputTimer < Game.GameTime)
+                if (InputTimer < DateTime.Now)
                 {
                     Game.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
                     return true;
@@ -626,7 +632,7 @@ namespace SimpleUI
         {
             if (Game.IsControlPressed(2, Control.PhoneDown) || Game.IsKeyPressed(Keys.NumPad2) || Game.IsKeyPressed(Keys.Down))
             {
-                if (InputTimer < Game.GameTime)
+                if (InputTimer < DateTime.Now)
                 {
                     Game.PlaySound(AUDIO_UPDOWN, AUDIO_LIBRARY);
                     return true;
@@ -639,7 +645,7 @@ namespace SimpleUI
         {
             if (Game.IsControlPressed(2, Control.PhoneLeft) || Game.IsKeyPressed(Keys.NumPad4) || Game.IsKeyPressed(Keys.Left))
             {
-                if (InputTimer < Game.GameTime)
+                if (InputTimer < DateTime.Now)
                 {
                     Game.PlaySound(AUDIO_LEFTRIGHT, AUDIO_LIBRARY);
                     return true;
@@ -652,7 +658,7 @@ namespace SimpleUI
         {
             if (Game.IsControlPressed(2, Control.PhoneRight) || Game.IsKeyPressed(Keys.NumPad6) || Game.IsKeyPressed(Keys.Right))
             {
-                if (InputTimer < Game.GameTime)
+                if (InputTimer < DateTime.Now)
                 {
                     Game.PlaySound(AUDIO_LEFTRIGHT, AUDIO_LIBRARY);
                     return true;
@@ -665,7 +671,7 @@ namespace SimpleUI
         {
             if (Game.IsControlPressed(2, Control.PhoneSelect) || Game.IsKeyPressed(Keys.NumPad5) || Game.IsKeyPressed(Keys.Enter))
             {
-                if (InputTimer < Game.GameTime)
+                if (InputTimer < DateTime.Now)
                 {
                     Game.PlaySound(AUDIO_SELECT, AUDIO_LIBRARY);
                     //InputTimer = Game.GameTime + 350;
@@ -679,7 +685,7 @@ namespace SimpleUI
         {
             if (Game.IsControlPressed(2, Control.PhoneCancel) || Game.IsKeyPressed(Keys.NumPad0) || Game.IsKeyPressed(Keys.Back))
             {
-                if (InputTimer < Game.GameTime)
+                if (InputTimer < DateTime.Now)
                 {
                     Game.PlaySound(AUDIO_BACK, AUDIO_LIBRARY);
                     //InputTimer = Game.GameTime + InputWait;
@@ -703,7 +709,7 @@ namespace SimpleUI
 
         public void SetInputWait(int ms = 350)
         {
-            InputTimer = Game.GameTime + ms;
+            InputTimer = DateTime.Now.AddMilliseconds(ms);
         }
 
         public bool ControlBoolValue(UIMenuItem item, bool boolToControl)
@@ -715,8 +721,8 @@ namespace SimpleUI
                 if (JustPressedAccept())
                 {
                     boolToControl = !boolToControl;
-                    //item.Value = boolToControl;
-                    InputTimer = Game.GameTime + InputWait;
+                    item.Value = boolToControl;
+                    InputTimer = DateTime.Now.AddMilliseconds(InputWait);
                     return boolToControl;
                 }
             }
@@ -725,7 +731,7 @@ namespace SimpleUI
 
         public float ControlFloatValue(UIMenuItem item, float numberToControl, float incrementValue, float incrementValueFast, int decimals = 2)
         {
-            item.Value = numberToControl;
+            item.Value = "< " + numberToControl + " >";
 
             if (SelectedItem == item)
             {
@@ -740,9 +746,9 @@ namespace SimpleUI
                         numberToControl -= incrementValue;
                     }
 
-                    //item.Value = numberToControl;
+                    item.Value = "< " + numberToControl + " >";
 
-                    InputTimer = Game.GameTime + InputWait;
+                    InputTimer = DateTime.Now.AddMilliseconds(InputWait);
 
                     return (float)Math.Round(numberToControl, decimals);
                 }
@@ -757,9 +763,9 @@ namespace SimpleUI
                         numberToControl += incrementValue;
                     }
 
-                    //item.Value = numberToControl;
+                    item.Value = "< " + numberToControl + " >";
 
-                    InputTimer = Game.GameTime + InputWait;
+                    InputTimer = DateTime.Now.AddMilliseconds(InputWait);
 
                     return (float)Math.Round(numberToControl, decimals);
                 }
@@ -769,7 +775,7 @@ namespace SimpleUI
 
         public int ControlIntValue(UIMenuItem item, int numberToControl, int incrementValue, int incrementValueFast)
         {
-            item.Value = numberToControl;
+            item.Value = "< " + numberToControl + " >";
 
             if (SelectedItem == item)
             {
@@ -784,9 +790,9 @@ namespace SimpleUI
                         numberToControl -= incrementValue;
                     }
 
-                    //item.Value = numberToControl;
+                    item.Value = "< " + numberToControl + " >";
 
-                    InputTimer = Game.GameTime + InputWait;
+                    InputTimer = DateTime.Now.AddMilliseconds(InputWait);
 
                     return numberToControl;
                 }
@@ -801,9 +807,9 @@ namespace SimpleUI
                         numberToControl += incrementValue;
                     }
 
-                    //item.Value = numberToControl;
+                    item.Value = "< " + numberToControl + " >";
 
-                    InputTimer = Game.GameTime + InputWait;
+                    InputTimer = DateTime.Now.AddMilliseconds(InputWait);
 
                     return numberToControl;
                 }
@@ -820,7 +826,7 @@ namespace SimpleUI
             base.yPosTitleBG = 0.50f;
             base.yPosTitleText = yPosTitleBG - (TitleFont / 35f);
             base.TitleBGHeight = 0.04f; //0.046f
-            base.xPosBG = 0.22f;
+            base.xPosBG = 0.125f;
             base.MenuBGWidth = 0.20f;
             base.heightItemBG = 0.025f;
             base.UnderlineHeight = 0.002f;
@@ -833,6 +839,20 @@ namespace SimpleUI
             base.ScrollBarWidth = 0.0055f;
             base.xPosScrollBar = xPosRightEndOfMenu - (ScrollBarWidth / 2);
             base.xPosItemValue = xPosScrollBar - (ScrollBarWidth / 2);
+            CalculateMenuPositioning();
+
+            MaxItemsInMenu(8);
+        }
+
+        public override void CalculateMenuPositioning()
+        {
+            yPosTitleText = yPosTitleBG - (TitleFont / 35f);
+            yPosUnderline = yPosTitleBG + (TitleBGHeight / 2) + (UnderlineHeight / 2);
+            yPosItemBG = yPosUnderline + (UnderlineHeight / 2) + (heightItemBG / 2); //0.0655f;
+            xPosItemText = xPosBG - MenuBGWidth / 2;
+            xPosRightEndOfMenu = xPosBG + MenuBGWidth / 2; //will Right Justify
+            xPosScrollBar = xPosRightEndOfMenu - (ScrollBarWidth / 2);
+            xPosItemValue = xPosScrollBar - (ScrollBarWidth / 2);
         }
 
         public override void Draw()
@@ -849,6 +869,40 @@ namespace SimpleUI
         protected override void ManageCurrentIndex()
         {
             //base.ManageCurrentIndex();
+        }
+
+        public void GoToNextItem()
+        {
+            SelectedIndex++;
+            if (SelectedIndex >= maxItem + 1)
+            {
+                minItem++;
+                maxItem++;
+            }
+        }
+
+        public void GoToFirstItem()
+        {
+            SelectedIndex = 0;
+            minItem = 0;
+            maxItem = MaxItemsOnScreen - 1;
+        }
+
+        public void GoToPreviousItem()
+        {
+            SelectedIndex--;
+            if (SelectedIndex < minItem && minItem > 0)
+            {
+                minItem--;
+                maxItem--;
+            }
+        }
+
+        public void GoToLastItem()
+        {
+            SelectedIndex = _itemList.Count - 1;
+            minItem = _itemList.Count - MaxItemsOnScreen;
+            maxItem = _itemList.Count - 1;
         }
     }
 
