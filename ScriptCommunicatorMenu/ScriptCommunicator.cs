@@ -25,8 +25,17 @@ namespace ScriptCommunicator
             Tick += OnTick;
             KeyDown += OnKeyDown;
             KeyUp += OnKeyUp;
+            Aborted += OnAbort;
 
             Interval = 0;
+        }
+
+        private void OnAbort(object sender, EventArgs e)
+        {
+            foreach (ModAndMenuItemPair pair in ModMenuItems)
+            {
+                pair.WaitHandle.Close();
+            }
         }
 
         List<ModAndMenuItemPair> ModMenuItems = new List<ModAndMenuItemPair>();
@@ -62,10 +71,8 @@ namespace ScriptCommunicator
             LeMainMenu.HighlightedItemTextColor = Color.Black;
             LeMainMenu.HighlightedBoxColor = Color.FromArgb(140, 13, 219, 175);
             LeMainMenu.DescriptionBoxColor = Color.FromArgb(230, 13, 219, 175);
-            LeMainMenu.TitleFont = 1.1f;
-            LeMainMenu.xPosBG = 0.13f;
-            LeMainMenu.MenuBGWidth = 0.24f;
             LeMainMenu.CalculateMenuPositioning();
+            LeMainMenu.UseEventBasedControls = false;
 
             _menuPool.AddMenu(LeMainMenu);
 

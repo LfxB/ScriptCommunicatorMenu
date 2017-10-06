@@ -47,7 +47,7 @@ namespace CommunicatorScriptExample
             if (Game.Player.Character.IsWalking)
             {
                 ExampleCommunicator.UnblockScriptCommunicatorModMenu(); 
-                /*Allow the communicator menu to be allowed when you walk. 
+                /*Allow the communicator menu to be allowed to open when you walk. 
                  * Be sure this is called if you ever use BlockScriptCommunicatorModMenu();, 
                  * or else the communicator menu will never be able to be opened! 
                  * Typically you would run this when your own menu is closed.

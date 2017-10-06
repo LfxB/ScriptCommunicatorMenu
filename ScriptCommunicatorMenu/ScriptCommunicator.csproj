@@ -31,8 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ScriptHookVDotNet">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files\Rockstar Games\Grand Theft Auto V\ScriptHookVDotNet.dll</HintPath>
+    <Reference Include="ScriptHookVDotNet2, Version=0.0.0.0, Culture=neutral, processorArchitecture=AMD64">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\..\Program Files\Rockstar Games\Grand Theft Auto V\ScriptHookVDotNet2.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -46,9 +47,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\SimpleUI\SimpleUI\SimpleUI.cs">
+      <Link>SimpleUI.cs</Link>
+    </Compile>
     <Compile Include="ScriptCommunicator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SimpleUI.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
