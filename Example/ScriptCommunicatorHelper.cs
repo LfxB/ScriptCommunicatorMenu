@@ -20,6 +20,18 @@ namespace ScriptCommunicatorHelper
             ScriptCommunicatorModMenuHandle = new EventWaitHandle(true, EventResetMode.ManualReset, "ScriptCommunicator");
         }
 
+        public void CreateSCModFile(string path = @"scripts\MyDllFilename.scmod", string menuTitle = "My New Script", string menuDescription = "This is a cool script.")
+        {
+            if (!File.Exists(path))
+            {
+                using (StreamWriter writer = new StreamWriter(path))
+                {
+                    writer.WriteLine(menuTitle);
+                    writer.WriteLine(menuDescription);
+                }
+            }
+        }
+
         public bool IsEventTriggered()
         {
             return MainHandle.WaitOne(0);
@@ -62,9 +74,15 @@ namespace ScriptCommunicatorHelper
             return !ScriptCommunicatorModMenuHandle.WaitOne(0);
         }
 
+        private static bool ScriptCommunicatorDllExists;
         public bool ScriptCommunicatorMenuDllExists()
         {
-            return File.Exists(@"scripts\ScriptCommunicator.dll");
+            if (ScriptCommunicatorDllExists)
+            {
+                return true;
+            }
+            ScriptCommunicatorDllExists = File.Exists(@"scripts\ScriptCommunicator.dll");
+            return ScriptCommunicatorDllExists;
         }
     }
 }
